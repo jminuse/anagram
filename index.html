@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, user-scalable=no" />
 <meta name="apple-mobile-web-app-capable" content="yes">
 <style>
-	.letter{ position:absolute; border:1px solid black;}
+	.letter{ position:absolute; }
 </style>
 </head>
 <body style="background-color:black; color:#AAA; overflow:hidden;">
@@ -16,11 +16,11 @@ String.prototype.replaceAt=function(index, character) {
 	return this.substr(0, index) + character + this.substr(index+character.length);
 }
 var shuffle_space = document.getElementById('shuffle-space');
-var text = 'james minuse stevenson';
-var shuffled = 'jauntiness moves semen';
-//var text = 'tom marvolo riddle';
+//var text = 'james minuse stevenson';
+//var shuffled = 'jauntiness moves semen';
+var text = 'tom marvolo riddle';
 //var shuffled = 'i am lord voldemort';
-//var shuffled = 'odd immortal lover';
+var shuffled = 'odd immortal lover';
 var W = text.length*1.5;
 var H = 8;
 shuffle_space.style.width = W+'em';
@@ -67,7 +67,7 @@ document.onclick = function() {
 	}*/
 	started = true;
 }
-var time_scale = 3*1000;
+var time_scale = 2*1000;
 var inert_time = time_scale;
 var elapsed_time = 0.0;
 var previous_time=0;
