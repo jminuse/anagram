@@ -18,9 +18,9 @@ String.prototype.replaceAt=function(index, character) {
 var shuffle_space = document.getElementById('shuffle-space');
 //var text = 'james minuse stevenson';
 //var shuffled = 'jauntiness moves semen';
-var text = 'tom marvolo riddle';
-var shuffled = 'i am lord voldemort';
-//var shuffled = 'odd immortal lover';
+//var text = 'tom marvolo riddle';
+var text =     'i am lord voldemort';
+var shuffled = 'odd immortal lover ';
 var W = text.length*1.5;
 var H = 8;
 shuffle_space.style.width = W+'em';
@@ -28,18 +28,19 @@ shuffle_space.style.height = W+'em';
 var started = false;
 var nodes = [];
 var sum_dx = 0.0; var sum_dy = 0.0;
-var start_v = 0.01;
+var start_v = 0.005;
 for(var i=0; i<text.length; i++) {
 	var n = document.createElement('div');
 	n.innerHTML = text[i];
 	n.className = 'letter';
 	n.x = i + W/2 - text.length/2;
-	n.y = 2.0;
+	n.y = 3.0;
 	n.style.top = n.y+'em';
 	n.style.left = n.x+'em';
 	
 	var ii = shuffled.indexOf(text[i]);
 	n.dest_x = ii + W/2 - text.length/2;
+	//console.log(i, ii, text[i], n.dest_x);
 	shuffled = shuffled.replaceAt(ii, '#');
 	n.dest_y = n.y;
 	
@@ -90,7 +91,7 @@ function animate() {
 		n.ddy = 0.0;
 	}
 	
-	var goal_v2 = 0.5*start_v*Math.min(time_scale-elapsed_time, 0)/time_scale;
+	var goal_v2 = 0.5*start_v*Math.max(time_scale-elapsed_time, 0.1)/time_scale;
 	
 	for(var i=0; i<nodes.length; i++) {
 		var n = nodes[i];
@@ -99,11 +100,11 @@ function animate() {
 			var px = p.x-n.x;
 			var py = p.y-n.y;
 			var r2 = px*px + py*py;
-			var r4 = r2*r2; var r8 = r4*r4;
-			n.ddx += 0.00001*px*(0.001/r4 - 1/r8);
-			p.ddx -= 0.00001*px*(0.001/r4 - 1/r8);
-			n.ddy += 0.00001*py*(0.001/r4 - 1/r8);
-			p.ddy -= 0.00001*py*(0.001/r4 - 1/r8);
+			var r4 = r2*r2;
+			n.ddx += 0.000001*px*(-1/r4);
+			p.ddx -= 0.000001*px*(-1/r4);
+			n.ddy += 0.000001*py*(-1/r4);
+			p.ddy -= 0.000001*py*(-1/r4);
 		}
 		var dest_x = n.dest_x-n.x;
 		var dest_y = n.dest_y-n.y;
@@ -112,11 +113,10 @@ function animate() {
 		n.ddx += 0.000001*strength*dest_x*(1/(r2+0.1));
 		n.ddy += 0.000001*strength*dest_y*(1/(r2+0.1));
 		//drag thermostat
-		n.ddx += 0.00001*(n.dx*n.dx-goal_v2/2);
-		n.ddy += 0.00001*(n.dy*n.dx-goal_v2/2);
+		//n.ddx += 0.00001*(n.dx*n.dx-goal_v2/2);
+		//n.ddy += 0.00001*(n.dy*n.dx-goal_v2/2);
 	}
 	
-	var sum_v2 = 0.0;
 	for(var i=0; i<nodes.length; i++) {
 		var n = nodes[i];
 		n.dx += 0.5*(n.ddx+n.ddx0)*dt;
@@ -124,14 +124,13 @@ function animate() {
 		//random thermostat
 		//n.dx += (0.5-Math.random())*0.000001*dt;
 		//n.dy += (0.5-Math.random())*0.000001*dt;
-		sum_v2 += n.dx*n.dx + n.dy*n.dy;
 	}
-	var mean_v2 = sum_v2/nodes.length;
 	//averaging thermostat
 	for(var i=0; i<nodes.length; i++) {
 		var n = nodes[i];
-		n.dx += 0.001*(goal_v2-n.dx*n.dx);
-		n.dy += 0.001*(goal_v2-n.dy*n.dy);
+		var v2 = n.dx*n.dx + n.dy*n.dy;
+		n.dx += (n.dx>0 ? 1 : -1)*0.001*(goal_v2-v2);
+		n.dy += (n.dx>0 ? 1 : -1)*0.001*(goal_v2-v2);
 	}
 	
 	for(var i=0; i<nodes.length; i++) {
@@ -139,10 +138,10 @@ function animate() {
 		n.x += n.dx*dt + n.ddx*dt*dt;
 		n.y += n.dy*dt + n.ddy*dt*dt;
 		
-		if(n.x<0) { n.x=0; n.dx=-n.dx;}
-		if(n.x>W) { n.x=W; n.dx=-n.dx;}
-		if(n.y<0) { n.y=0; n.dy=-n.dy;}
-		if(n.y>H) { n.y=H; n.dy=-n.dy;}
+		if(n.x<0) { n.x=0; n.dx =  Math.abs(n.dx);}
+		if(n.x>W) { n.x=W; n.dx = -Math.abs(n.dx);}
+		if(n.y<0) { n.y=0; n.dy =  Math.abs(n.dy);}
+		if(n.y>H) { n.y=H; n.dy = -Math.abs(n.dy);}
 		
 		n.style.top = n.y+'em';
 		n.style.left = n.x+'em';
