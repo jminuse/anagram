@@ -18,6 +18,9 @@ String.prototype.replaceAt=function(index, character) {
 var shuffle_space = document.getElementById('shuffle-space');
 var text = 'james minuse stevenson';
 var shuffled = 'jauntiness moves semen';
+//var text = 'tom marvolo riddle';
+//var shuffled = 'i am lord voldemort';
+//var shuffled = 'odd immortal lover';
 var W = text.length*1.5;
 var H = 5;
 shuffle_space.style.width = W+'em';
@@ -25,6 +28,7 @@ shuffle_space.style.height = W+'em';
 var started = false;
 var nodes = [];
 var sum_dx = 0.0; var sum_dy = 0.0;
+var start_v = 0.01;
 for(var i=0; i<text.length; i++) {
 	var n = document.createElement('div');
 	n.innerHTML = text[i];
@@ -39,8 +43,8 @@ for(var i=0; i<text.length; i++) {
 	shuffled = shuffled.replaceAt(ii, '#');
 	n.dest_y = n.y;
 	
-	n.dx = Math.random()*0.01;
-	n.dy = Math.random()*0.01;
+	n.dx = Math.random()*start_v;
+	n.dy = Math.random()*start_v;
 	n.ddx = 0.0; n.ddy = 0.0;
 	n.ddx0 = 0.0; n.ddy0 = 0.0;
 	sum_dx += n.dx;
@@ -63,7 +67,8 @@ document.onclick = function() {
 	}*/
 	started = true;
 }
-var time_scale = 10000;
+var time_scale = 10*1000;
+var inert_time = time_scale;
 var elapsed_time = 0.0;
 var previous_time=0;
 function animate() {
@@ -74,7 +79,8 @@ function animate() {
 	var dt = current_time - previous_time;
 	previous_time = current_time;
 	if(dt>500) { return; } //do not count offscreen time
-	elapsed_time += dt;
+	if(inert_time>0) inert_time-=dt;
+	else elapsed_time += dt;
 	
 	for(var i=0; i<nodes.length; i++) {
 		var n = nodes[i];
@@ -84,6 +90,8 @@ function animate() {
 		n.ddy = 0.0;
 	}
 	
+	var goal_v2 = 0.5*start_v*Math.min(time_scale-elapsed_time, 0)/time_scale;
+	
 	for(var i=0; i<nodes.length; i++) {
 		var n = nodes[i];
 		for(var j=i+1; j<nodes.length; j++) {
@@ -92,29 +100,40 @@ function animate() {
 			var py = p.y-n.y;
 			var r2 = px*px + py*py;
 			var r4 = r2*r2; var r8 = r4*r4;
-			n.ddx += 0.00001*px*(1/r4 - 1/r8);
-			p.ddx -= 0.00001*px*(1/r4 - 1/r8);
-			n.ddy += 0.00001*py*(1/r4 - 1/r8);
-			p.ddy -= 0.00001*py*(1/r4 - 1/r8);
+			n.ddx += 0.00001*px*(0.001/r4 - 1/r8);
+			p.ddx -= 0.00001*px*(0.001/r4 - 1/r8);
+			n.ddy += 0.00001*py*(0.001/r4 - 1/r8);
+			p.ddy -= 0.00001*py*(0.001/r4 - 1/r8);
 		}
 		var dest_x = n.dest_x-n.x;
 		var dest_y = n.dest_y-n.y;
 		r2 = dest_x*dest_x + dest_y*dest_y;
-		n.ddx += 0.00001*elapsed_time/time_scale*dest_x*(1/(r2+0.1));
-		n.ddy += 0.00001*elapsed_time/time_scale*dest_y*(1/(r2+0.1));
-		
-		//n.ddx += 0.0001*(n.dx*n.dx-0.01*0.01);
-		//n.ddy += 0.0001*(n.dy*n.dx-0.01*0.01);
+		var strength = (elapsed_time/time_scale)*(elapsed_time/time_scale);
+		n.ddx += 0.00001*strength*dest_x*(1/(r2+0.1));
+		n.ddy += 0.00001*strength*dest_y*(1/(r2+0.1));
+		//drag thermostat
+		n.ddx += 0.00001*(n.dx*n.dx-goal_v2/2);
+		n.ddy += 0.00001*(n.dy*n.dx-goal_v2/2);
 	}
 	
-	var sum_abs_dx = 0.0; var sum_abs_dy = 0.0;
+	var sum_v2 = 0.0;
 	for(var i=0; i<nodes.length; i++) {
 		var n = nodes[i];
 		n.dx += 0.5*(n.ddx+n.ddx0)*dt;
 		n.dy += 0.5*(n.ddy+n.ddy0)*dt;
+		//random thermostat
 		//n.dx += (0.5-Math.random())*0.000001*dt;
 		//n.dy += (0.5-Math.random())*0.000001*dt;
+		sum_v2 += n.dx*n.dx + n.dy*n.dy;
 	}
+	var mean_v2 = sum_v2/nodes.length;
+	//averaging thermostat
+	for(var i=0; i<nodes.length; i++) {
+		var n = nodes[i];
+		n.dx += 0.001*(goal_v2-n.dx*n.dx);
+		n.dy += 0.001*(goal_v2-n.dy*n.dy);
+	}
+	
 	
 	for(var i=0; i<nodes.length; i++) {
 		var n = nodes[i];
