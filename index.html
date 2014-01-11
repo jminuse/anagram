@@ -108,7 +108,7 @@ function animate() {
 		var dest_x = n.dest_x-n.x;
 		var dest_y = n.dest_y-n.y;
 		r2 = dest_x*dest_x + dest_y*dest_y;
-		var strength = (elapsed_time/time_scale)*(elapsed_time/time_scale);
+		var strength = Math.min( (elapsed_time/time_scale)*(elapsed_time/time_scale), 10*10);
 		n.ddx += 0.00001*strength*dest_x*(1/(r2+0.1));
 		n.ddy += 0.00001*strength*dest_y*(1/(r2+0.1));
 		//drag thermostat
