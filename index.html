@@ -28,7 +28,7 @@ shuffle_space.style.height = W+'em';
 var started = false;
 var nodes = [];
 var sum_dx = 0.0; var sum_dy = 0.0;
-var start_v = 0.005;
+var start_v = 0.01;
 for(var i=0; i<text.length; i++) {
 	var n = document.createElement('div');
 	n.innerHTML = text[i];
@@ -69,7 +69,7 @@ document.onclick = function() {
 	started = true;
 }
 var time_scale = 2*1000;
-var inert_time = time_scale;
+var inert_time = 0;
 var elapsed_time = 0.0;
 var previous_time=0;
 function animate() {
@@ -100,7 +100,7 @@ function animate() {
 			var px = p.x-n.x;
 			var py = p.y-n.y;
 			var r2 = px*px + py*py;
-			var r4 = r2*r2;
+			var r4 = r2*r2 + 0.1;
 			n.ddx += 0.000001*px*(-1/r4);
 			p.ddx -= 0.000001*px*(-1/r4);
 			n.ddy += 0.000001*py*(-1/r4);
