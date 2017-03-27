@@ -16,11 +16,11 @@ String.prototype.replaceAt=function(index, character) {
 	return this.substr(0, index) + character + this.substr(index+character.length);
 }
 var shuffle_space = document.getElementById('shuffle-space');
-//var text = 'james minuse stevenson';
-//var shuffled = 'jauntiness moves semen';
+var text = 'james minuse stevenson';
+var shuffled = 'jauntiness moves semen';
 //var text = 'tom marvolo riddle';
-var text =     'i am lord voldemort';
-var shuffled = 'odd immortal lover ';
+//var text =     'i am lord voldemort';
+//var shuffled = 'odd immortal lover ';
 var W = text.length*1.5;
 var H = 8;
 shuffle_space.style.width = W+'em';
@@ -113,6 +113,8 @@ function animate() {
 		n.ddx += 0.000001*strength*dest_x*(1/(r2+0.1));
 		n.ddy += 0.000001*strength*dest_y*(1/(r2+0.1));
 		//drag thermostat
+		n.ddx -= 0.00001*n.dx;
+		n.ddy -= 0.00001*n.dy;
 		//n.ddx += 0.00001*(n.dx*n.dx-goal_v2/2);
 		//n.ddy += 0.00001*(n.dy*n.dx-goal_v2/2);
 	}
