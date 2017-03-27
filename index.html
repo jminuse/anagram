@@ -101,10 +101,10 @@ function animate() {
 			var py = p.y-n.y;
 			var r2 = px*px + py*py;
 			var r4 = r2*r2 + 0.1;
-			n.ddx += 0.000001*px*(-1/r4);
-			p.ddx -= 0.000001*px*(-1/r4);
-			n.ddy += 0.000001*py*(-1/r4);
-			p.ddy -= 0.000001*py*(-1/r4);
+			n.ddx += 0.0000001*px*(-1/r4);
+			p.ddx -= 0.0000001*px*(-1/r4);
+			n.ddy += 0.0000001*py*(-1/r4);
+			p.ddy -= 0.0000001*py*(-1/r4);
 		}
 		var dest_x = n.dest_x-n.x;
 		var dest_y = n.dest_y-n.y;
@@ -114,8 +114,8 @@ function animate() {
 		n.ddx += 0.000001*strength*dest_x*(1/(r2+0.1));
 		n.ddy += 0.000001*strength*dest_y*(1/(r2+0.1));
 		//drag
-		n.ddx -= 0.0001*strength*n.dx;
-		n.ddy -= 0.0001*strength*n.dy;
+		n.ddx -= 0.00001*strength*n.dx;
+		n.ddy -= 0.00001*strength*n.dy;
 	}
 	
 	for(var i=0; i<nodes.length; i++) {
