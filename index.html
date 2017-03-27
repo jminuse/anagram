@@ -109,14 +109,13 @@ function animate() {
 		var dest_x = n.dest_x-n.x;
 		var dest_y = n.dest_y-n.y;
 		r2 = dest_x*dest_x + dest_y*dest_y;
-		var strength = Math.min( (elapsed_time/time_scale)*(elapsed_time/time_scale), 10*10);
+		// strength starts at 0.0 and increases to 100.0
+		var strength = Math.min( (elapsed_time/time_scale)*(elapsed_time/time_scale), 100.0);
 		n.ddx += 0.000001*strength*dest_x*(1/(r2+0.1));
 		n.ddy += 0.000001*strength*dest_y*(1/(r2+0.1));
-		//drag thermostat
-		n.ddx -= 0.001*n.dx;
-		n.ddy -= 0.001*n.dy;
-		//n.ddx += 0.00001*(n.dx*n.dx-goal_v2/2);
-		//n.ddy += 0.00001*(n.dy*n.dx-goal_v2/2);
+		//drag
+		n.ddx -= 0.0001*strength*n.dx;
+		n.ddy -= 0.0001*strength*n.dy;
 	}
 	
 	for(var i=0; i<nodes.length; i++) {
